@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# lidmode on|off|toggle|status
+# on  = server mode: closing the lid does NOT suspend (homelab stays reachable)
+# off = laptop mode: closing the lid suspends (use when it's on the bed / in a bag)
+# The choice survives reboots via a flag file the service checks at login.
+# (Not enable/disable: disabling a stow-linked unit deletes the symlink.)
+# Works by holding a logind "handle-lid-switch" inhibitor lock, so no sudo needed.
+set -uo pipefail
+
+unit=lid-server-mode.service
+flag="$HOME/.local/state/lidmode/off"
+
+notify() {   # popup when run from a keybind/Waybar, plain text in a terminal
+    echo "$1"
+    [[ -t 1 ]] || notify-send -a lidmode "Lid mode" "$1" 2>/dev/null || true
+}
+
+lid_action() {   # what logind does on lid close when nothing holds the lock
+    busctl get-property org.freedesktop.login1 /org/freedesktop/login1 \
+        org.freedesktop.login1.Manager "$1" 2>/dev/null | tr -d '"' | awk '{print $2}'
+}
+
+case "${1:-status}" in
+    on|server)
+        rm -f "$flag"
+        if systemctl --user start "$unit"; then
+            notify "Server mode ON: closing the lid will NOT suspend"
+        else
+            notify "Server mode FAILED to start, see: systemctl --user status $unit"; exit 1
+        fi ;;
+    off|laptop)
+        mkdir -p "${flag%/*}" && touch "$flag"
+        systemctl --user stop "$unit"
+        notify "Server mode OFF: closing the lid will suspend" ;;
+    toggle)
+        if systemctl --user is-active -q "$unit"; then "$0" off; else "$0" on; fi ;;
+    status)
+        if systemctl --user is-active -q "$unit"; then
+            echo "server mode: ON  (lid close ignored)"
+        else
+            echo "server mode: OFF (lid close → $(lid_action HandleLidSwitch) on battery, $(lid_action HandleLidSwitchExternalPower) on charger)"
+        fi
+        if [[ "$(lid_action HandleLidSwitch)" == ignore ]]; then
+            echo "warning: logind itself is set to ignore the lid, so 'off' can't make it suspend."
+            echo "         check /etc/systemd/logind.conf.d/"
+        fi ;;
+    *)
+        echo "usage: lidmode on|off|toggle|status" >&2; exit 2 ;;
+esac

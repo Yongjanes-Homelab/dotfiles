@@ -1,0 +1,16 @@
+[Unit]
+Description=Homelab server mode: keep running with the lid closed
+Documentation=man:systemd-inhibit(1) man:logind.conf(5)
+# "lidmode off" creates this flag, so server mode stays off after a reboot too.
+# (Saved as a flag, not with "systemctl disable": disable deletes stow's symlink.)
+ConditionPathExists=!%h/.local/state/lidmode/off
+
+[Service]
+# While this lock is held, logind ignores the lid switch. Stop the service
+# (lidmode off) and closing the lid suspends again, as set in logind.conf.
+ExecStart=/usr/bin/systemd-inhibit --what=handle-lid-switch --mode=block \
+    --who=lidmode --why="Server mode: lid close ignored (lidmode off to allow suspend)" \
+    sleep infinity
+
+[Install]
+WantedBy=default.target
