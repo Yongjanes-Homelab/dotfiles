@@ -1,0 +1,39 @@
+/* SwayOSD popup (volume / brightness / mute). Colours from pywal:
+   ~/.cache/wal/colors-swayosd.css (template ~/.config/wal/templates/colors-swayosd.css) */
+@import "/home/Yongjanes/.cache/wal/colors-swayosd.css";
+
+window#osd {
+  background: alpha(@osd_bg, 0.92);
+  border: 1px solid alpha(@osd_accent, 0.7);
+  border-radius: 999px;
+  padding: 10px 18px;
+}
+window#osd #container {
+  margin: 6px 10px;
+}
+window#osd image,
+window#osd label {
+  color: @osd_fg;
+  font-family: "JetBrainsMono Nerd Font";
+  font-weight: 700;
+}
+window#osd image:disabled,
+window#osd label:disabled {
+  color: @osd_dim;                  /* muted */
+}
+window#osd progressbar {
+  min-width: 220px;
+}
+window#osd progressbar trough {
+  min-height: 6px;
+  border-radius: 999px;
+  background: alpha(@osd_fg, 0.15);
+}
+window#osd progressbar progress {
+  min-height: 6px;
+  border-radius: 999px;
+  background: @osd_accent;
+}
+window#osd progressbar:disabled progress {
+  background: @osd_dim;
+}

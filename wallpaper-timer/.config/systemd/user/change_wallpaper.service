@@ -1,0 +1,12 @@
+[Unit]
+Description=Change wallpaper using AWWW
+After=awww.service
+
+
+[Service]
+ExecStart=/bin/bash /home/Yongjanes/.config/awww/awww.sh
+
+
+[Install]
+WantedBy=default.target
+

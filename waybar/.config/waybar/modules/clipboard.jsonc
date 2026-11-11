@@ -1,0 +1,8 @@
+{
+  "custom/clipboard": {
+    "format": "󰅌",
+    "tooltip-format": "Clipboard history\nLeft: open  ·  Right: clear all",
+    "on-click": "~/.local/bin/clipboard pick",
+    "on-click-right": "~/.local/bin/clipboard clear"
+  }
+}

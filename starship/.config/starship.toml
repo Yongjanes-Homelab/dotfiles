@@ -1,0 +1,59 @@
+# Starship prompt (~/.bashrc runs `starship init bash`). Colours are the terminal's own
+# palette (blue, magenta...), which kitty takes from pywal, so the prompt follows the wallpaper.
+#
+#   Yongjanes@Yongjanes in ~/homelab on  main [!] took 3s
+#   ❯
+"$schema" = "https://starship.rs/config-schema.json"
+add_newline = true
+
+format = """
+$username$hostname in $directory$git_branch$git_status$python$terraform$kubernetes$cmd_duration
+$character"""
+
+[username]
+show_always = true
+style_user = "bold magenta"
+style_root = "bold red"
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+style = "bold blue"
+format = "[@$hostname$ssh_symbol]($style)"   # adds a globe icon when you are in over SSH
+ssh_symbol = " "
+
+[directory]
+style = "bold cyan"
+truncation_length = 3
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+[git_branch]
+symbol = " "
+style = "bold green"
+format = "on [$symbol$branch]($style) "
+
+[git_status]
+style = "yellow"
+format = '([\[$all_status$ahead_behind\]]($style) )'
+
+[python]
+symbol = " "
+format = "via [$symbol$version]($style) "
+
+[terraform]
+format = "via [󱁢 $workspace]($style) "
+
+[kubernetes]
+disabled = false          # shows the cluster/namespace kubectl is pointed at (Phase 6)
+symbol = "󱃾 "
+format = "on [$symbol$context( \\($namespace\\))]($style) "
+
+[cmd_duration]
+min_time = 2000
+style = "dimmed white"
+format = "took [$duration]($style)"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"

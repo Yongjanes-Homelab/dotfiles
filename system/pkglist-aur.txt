@@ -1,0 +1,12 @@
+bibata-cursor-theme
+brave-bin
+claude-code
+claude-cowork-linux
+hyprsysteminfo
+logseq-desktop-bin
+pokemon-colorscripts-git
+python-pywal16
+qt6ct-kde
+waypaper
+yay
+yay-debug
